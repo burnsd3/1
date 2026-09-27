@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Set up JDK 17
@@ -20,15 +20,43 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Build debug APK
-        working-directory: android-app
+      - name: Extract Vid2Cam source
         run: |
+          mkdir source
+          unzip -q vid2cam-with-github-actions.zip -d source
+          echo "Extracted files:"
+          find source -maxdepth 4 -type f | head -100
+
+      - name: Find Gradle project
+        run: |
+          GRADLEW=$(find source -type f -name gradlew | head -1)
+          if [ -z "$GRADLEW" ]; then
+            echo "ERROR: gradlew not found"
+            exit 1
+          fi
+          PROJECT_DIR=$(dirname "$GRADLEW")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+          echo "Found Gradle project at: $PROJECT_DIR"
+
+      - name: Build APK
+        run: |
+          cd "$PROJECT_DIR"
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
+
+      - name: Find APK
+        run: |
+          APK=$(find source -type f -name "app-debug.apk" | head -1)
+          if [ -z "$APK" ]; then
+            echo "ERROR: APK was not produced"
+            exit 1
+          fi
+          echo "APK=$APK" >> "$GITHUB_ENV"
+          echo "Found APK: $APK"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: vid2cam-debug-apk
-          path: android-app/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ env.APK }}
           if-no-files-found: error
