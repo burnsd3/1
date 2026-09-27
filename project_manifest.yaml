@@ -1,0 +1,12 @@
+# Project Manifest for vid2cam
+features:
+  - Camera2 live preview
+  - Video playback overlay
+  - UI toggle between camera and video
+  - Lifecycle-aware state management
+  - Permissions handling
+  - Composable overlay/blending architecture
+  - OpenGL composition (advanced)
+  - Chroma key/green screen (advanced)
+  - CameraX migration (optional)
+  - Overlay recording (optional)

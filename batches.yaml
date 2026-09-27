@@ -1,0 +1,9 @@
+# Batches for vid2cam
+batches:
+  - name: Initial Setup
+    tasks:
+      - Initialize project structure
+      - Generate core files
+      - Set up VSCode tasks
+      - Batch processing setup
+      - Validate project setup
